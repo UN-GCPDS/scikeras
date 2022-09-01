@@ -11,7 +11,7 @@ import tensorflow.keras as keras
 
 from tensorflow import Variable
 from tensorflow import io as tf_io
-from tensorflow import saved_model
+from tensorflow import saved_model, config # for TPU usage
 from tensorflow.keras.models import load_model
 
 LOCALhost_save_option = saved_model.SaveOptions(experimental_io_device="/job:localhost")
@@ -65,7 +65,7 @@ def unpack_keras_model(
             tf_io.gfile.makedirs(os.path.dirname(dest))
             with tf_io.gfile.GFile(dest, "wb") as f:
                 f.write(archive.extractfile(fname).read())   
-    if tf.config.list_logical_devices('TPU')==[]:                
+    if config.list_logical_devices('TPU')==[]:                
         model: keras.Model = load_model(temp_dir, options=LOCALhost_save_option)
     else:
         model: keras.Model = load_model(temp_dir)
@@ -91,7 +91,7 @@ def pack_keras_model(
 ]:
     """Support for Pythons's Pickle protocol."""
     temp_dir = _get_temp_folder()
-    if tf.config.list_logical_devices('TPU')==[]: 
+    if config.list_logical_devices('TPU')==[]: 
         model.save(temp_dir,options=LOCALhost_save_option)
     else:
         model.save(temp_dir)
