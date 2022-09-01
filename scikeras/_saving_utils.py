@@ -66,9 +66,9 @@ def unpack_keras_model(
             with tf_io.gfile.GFile(dest, "wb") as f:
                 f.write(archive.extractfile(fname).read())   
     if config.list_logical_devices('TPU')==[]:                
-        model: keras.Model = load_model(temp_dir, options=LOCALhost_save_option)
-    else:
         model: keras.Model = load_model(temp_dir)
+    else:
+        model: keras.Model = load_model(temp_dir, options=LOCALhost_save_option)
     for root, _, filenames in tf_io.gfile.walk(temp_dir):
         for filename in filenames:
             if filename.startswith("ram://"):
@@ -92,9 +92,9 @@ def pack_keras_model(
     """Support for Pythons's Pickle protocol."""
     temp_dir = _get_temp_folder()
     if config.list_logical_devices('TPU')==[]: 
-        model.save(temp_dir,options=LOCALhost_save_option)
-    else:
         model.save(temp_dir)
+    else:
+        model.save(temp_dir,options=LOCALhost_save_option)
     b = BytesIO()
     with tarfile.open(fileobj=b, mode="w") as archive:
         for root, _, filenames in tf_io.gfile.walk(temp_dir):
