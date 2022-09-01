@@ -15,6 +15,7 @@ from tensorflow import saved_model, config # for TPU usage
 from tensorflow.keras.models import load_model
 
 LOCALhost_save_option = saved_model.SaveOptions(experimental_io_device="/job:localhost")
+LOCALhost_load_option = saved_model.LoadOptions(experimental_io_device="/job:localhost")
 
 def _get_temp_folder() -> str:
     if os.name == "nt":
@@ -68,7 +69,7 @@ def unpack_keras_model(
     if config.list_logical_devices('TPU')==[]:                
         model: keras.Model = load_model(temp_dir)
     else:
-        model: keras.Model = load_model(temp_dir, options=LOCALhost_save_option)
+        model: keras.Model = load_model(temp_dir, options=LOCALhost_load_option)
     for root, _, filenames in tf_io.gfile.walk(temp_dir):
         for filename in filenames:
             if filename.startswith("ram://"):
